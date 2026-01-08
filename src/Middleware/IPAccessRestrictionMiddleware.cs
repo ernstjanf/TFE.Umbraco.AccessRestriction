@@ -75,7 +75,7 @@ public class IPAccessRestrictionMiddleware
             if (!string.IsNullOrWhiteSpace(clientIp))
             {
                 var ipBlacklist = iPAccessRestrictionRepository.GetBlacklistedIpAddresses();
-                proceed = Helper.IsOnList(ipBlacklist, clientIp);
+                proceed = !Helper.IsOnList(ipBlacklist, clientIp);
                 if (proceed)
                 {
                     var ipWhitelist = iPAccessRestrictionRepository.GetAllIpAddresses();
