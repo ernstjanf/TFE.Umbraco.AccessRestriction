@@ -14,7 +14,6 @@ public class IPAccessRestrictionMiddleware
     private readonly IRuntimeState _runtimeState;
     private readonly RequestDelegate _next;
     private readonly Config? _config;
-    private static readonly string[] separator = [","];
     public static bool IsRegistered { get; private set; } = false;
 
     public IPAccessRestrictionMiddleware(IRuntimeState runtimeState, RequestDelegate next, IConfiguration config, ILogger<IPAccessRestrictionMiddleware> logger)
@@ -62,13 +61,13 @@ public class IPAccessRestrictionMiddleware
 
         var requestPath = context.Request.Path;
 
-        var excludePaths = _config?.ExcludePaths?.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-        var includePaths = _config?.IncludePaths?.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+        var excludePaths = _config?.ExcludePaths;
+        var includePaths = _config?.IncludePaths;
 
-        var isIncludePathMatch = includePaths != null && includePaths.Length > 0 && Array.Exists(includePaths, includePath => requestPath.StartsWithSegments(includePath.Trim()));
-        var isExcludePathMatch = excludePaths != null && excludePaths.Length > 0 && Array.Exists(excludePaths, excludePath => requestPath.StartsWithSegments(excludePath.Trim()));
+        var isIncludePathMatch = includePaths?.Any(includePath => requestPath.StartsWithSegments(includePath.Trim())) ?? false;
+        var isExcludePathMatch = excludePaths?.Any(excludePath => requestPath.StartsWithSegments(excludePath.Trim())) ?? false;
 
-        if ((isIncludePathMatch) || (excludePaths == null || !isExcludePathMatch))
+        if ((isIncludePathMatch) || (!excludePaths.Any() || !isExcludePathMatch))
         {
             var clientIp = iPAccessRestrictionRepository.GetClientIP();
 

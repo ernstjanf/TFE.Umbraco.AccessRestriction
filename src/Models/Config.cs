@@ -6,9 +6,9 @@ public class Config
 
     public bool LogBlockedIP { get; set; }
 
-    public string? ExcludePaths { get; set; }
+    public IEnumerable<string>? ExcludePaths { get; set; }
 
-    public string? IncludePaths { get; set; }
+    public IEnumerable<string>? IncludePaths { get; set; }
 
     public string? LocalHost { get; set; }
 
