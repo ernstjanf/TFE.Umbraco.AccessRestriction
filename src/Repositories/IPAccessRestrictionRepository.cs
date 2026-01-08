@@ -42,10 +42,10 @@ public class IPAccessRestrictionRepository : IIPAccessRestrictionRepository
 
         _globalCache = appCaches.IsolatedCaches.GetOrCreate(typeof(IPAccessRestrictionRepository));
 
-        var configSection = config.GetSection("TFE.Umbraco.AccessRestriction");
+        var configSection = config.GetSection("IPFiltering");
         if (!configSection.Exists())
         {
-            logger.LogWarning("The configuration section 'TFE.Umbraco.AccessRestriction' is missing in appsettings.json.");
+            logger.LogWarning("The configuration section 'IPFiltering' is missing in appsettings.json.");
             _config = null;
         }
         else
