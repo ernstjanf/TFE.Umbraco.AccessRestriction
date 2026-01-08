@@ -67,7 +67,7 @@ public class IPAccessRestrictionMiddleware
         var isIncludePathMatch = includePaths?.Any(includePath => requestPath.StartsWithSegments(includePath.Trim())) ?? false;
         var isExcludePathMatch = excludePaths?.Any(excludePath => requestPath.StartsWithSegments(excludePath.Trim())) ?? false;
 
-        if ((isIncludePathMatch) || (!excludePaths.Any() || !isExcludePathMatch))
+        if ((isIncludePathMatch) || (excludePaths == null || !isExcludePathMatch))
         {
             var clientIp = iPAccessRestrictionRepository.GetClientIP();
 
