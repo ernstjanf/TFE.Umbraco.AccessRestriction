@@ -7,6 +7,8 @@ public interface IIPAccessRestrictionRepository
 
     IEnumerable<string> GetAllIpAddresses();
 
+    IEnumerable<string> GetBlacklistedIpAddresses();
+
     IPAccessEntry? GetbyId(Guid id);
 
     bool Save(IPAccessEntry entry);

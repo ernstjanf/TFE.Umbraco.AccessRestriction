@@ -52,7 +52,7 @@ public class IPAccessRestrictionMiddleware
             await _next(context);
             return;
         }
-        context.Response.StatusCode = 403;
+        context.Response.StatusCode = _config.HttpStatusCode ?? 403;
         await context.Response.WriteAsync("You don't have permission to access / on this server.");
     }
 
@@ -74,9 +74,14 @@ public class IPAccessRestrictionMiddleware
 
             if (!string.IsNullOrWhiteSpace(clientIp))
             {
-                var ipWhitelist = iPAccessRestrictionRepository.GetAllIpAddresses();
+                var ipBlacklist = iPAccessRestrictionRepository.GetBlacklistedIpAddresses();
+                proceed = Helper.IsOnList(ipBlacklist, clientIp);
+                if (proceed)
+                {
+                    var ipWhitelist = iPAccessRestrictionRepository.GetAllIpAddresses();
 
-                proceed = Helper.IsWhitelisted(ipWhitelist, clientIp);
+                    proceed = Helper.IsOnList(ipWhitelist, clientIp);
+                }
 
                 if (_config != null && !proceed && _config.LogBlockedIP)
                     logger.LogInformation("IP {IP} blocked", clientIp);

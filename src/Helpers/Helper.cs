@@ -10,7 +10,7 @@ public class Helper
         _runtimeState = runtimeState;
     }
 
-    public static bool IsWhitelisted(IEnumerable<string>? whitelist, string clientIp)
+    public static bool IsOnList(IEnumerable<string>? whitelist, string clientIp)
     {
         if (whitelist is null)
         {

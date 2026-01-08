@@ -15,4 +15,10 @@ public class Config
     public bool IsCloudflare { get; set; }
 
     public string? CustomHeader { get; set; }
+
+    public IEnumerable<string>? Whitelist { get; set; }
+
+    public IEnumerable<string>? Blacklist { get; set; }
+    
+    public int? HttpStatusCode { get; set; }
 }

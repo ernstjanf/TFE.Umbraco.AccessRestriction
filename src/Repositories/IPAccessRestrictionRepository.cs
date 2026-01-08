@@ -120,7 +120,7 @@ public class IPAccessRestrictionRepository : IIPAccessRestrictionRepository
 
             var ipsFromDatabase = from r in result where !string.IsNullOrWhiteSpace(r.Ip) select r.Ip;
 
-            var ipsFromTxtFile = GetIpAddressesFromTxtFile(_env.ContentRootPath).ToList();
+            var ipsFromTxtFile = GetIpAddressesFromTxtFile(_env.ContentRootPath, _config).ToList();
 
             if (ipsFromTxtFile.Count > 0)
             {
@@ -132,6 +132,11 @@ public class IPAccessRestrictionRepository : IIPAccessRestrictionRepository
         }) as IEnumerable<string>;
 
         return result ?? Enumerable.Empty<string>();
+    }
+
+    public IEnumerable<string> GetBlacklistedIpAddresses()
+    {
+        return _config?.Blacklist ?? [];
     }
 
     public IPAccessEntry? GetbyId(Guid id)
@@ -193,7 +198,7 @@ public class IPAccessRestrictionRepository : IIPAccessRestrictionRepository
             return string.Empty;
     }
 
-    private static IEnumerable<string> GetIpAddressesFromTxtFile(string path)
+    private static IEnumerable<string> GetIpAddressesFromTxtFile(string path, Config? config)
     {
         if (_ipsFromFile != null)
         {
@@ -201,6 +206,19 @@ public class IPAccessRestrictionRepository : IIPAccessRestrictionRepository
         }
 
         var processedLines = new List<string>();
+
+        try
+        {
+            if (config?.Whitelist != null && config.Whitelist.Any())
+            {
+                processedLines = config.Whitelist.ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "WhiteList array in configuration cannot be found");
+        }
+        
         try
         {
             using StreamReader reader = new(Path.Combine(path, "WhitelistedIps.txt"));
@@ -227,7 +245,7 @@ public class IPAccessRestrictionRepository : IIPAccessRestrictionRepository
     {
         if (_ipsFromFile == null)
         {
-            GetIpAddressesFromTxtFile(_env.ContentRootPath);
+            GetIpAddressesFromTxtFile(_env.ContentRootPath, _config);
         }
 
         if (_ipsFromFile != null && _ipsFromFile.Any())
